@@ -89,7 +89,7 @@ public class ACMESports {
 
 
             if (plantel.cadastraAtleta(a)) {
-                System.out.println("1: " + a.getNumero() + " , " + a.getNome() + " , " + a.getPais());
+                System.out.println("1:" + a.getNumero() + "," + a.getNome() + "," + a.getPais());
                 //System.out.println("Atleta cadastrado!");
             }
 
@@ -164,10 +164,10 @@ public class ACMESports {
 
             if (medalha != null && atleta != null) {
                 medalha.adicionaAtleta(atleta);
-                System.out.println("3: " + medalha.getCodigo() + "," + atleta.getNumero());
-            } else {
-                System.out.println("Nao encontrado");
+                atleta.adicionaMedalha(medalha);
+                System.out.println("3:" + medalha.getCodigo() + "," + atleta.getNumero());
             }
+
             codigo = entrada.nextInt();
             entrada.nextLine();
         }
@@ -190,7 +190,7 @@ public class ACMESports {
         Atleta atleta = plantel.consultaAtleta(numero);
 
         if (atleta == null) {
-            System.out.println("4: Nenhum atleta encontrado.");
+            System.out.println("4:Nenhum atleta encontrado.");
         } else {
             System.out.println("4:" + atleta.getNumero() + "," + atleta.getNome() + "," + atleta.getPais());
         }
@@ -213,7 +213,7 @@ public class ACMESports {
         Atleta atleta = plantel.consultaAtleta(nome);
 
         if (atleta == null) {
-            System.out.println("5: Nenhum atleta encontrado.");
+            System.out.println("5:Nenhum atleta encontrado.");
         } else {
             System.out.println("5:" + atleta.getNumero() + "," + atleta.getNome() + "," + atleta.getPais());
         }
@@ -235,7 +235,7 @@ public class ACMESports {
         Medalha medalha = medalheiro.consultaMedalha(codigo);
 
         if (medalha == null) {
-            System.out.println("6: Nenhuma medalha encontrada.");
+            System.out.println("6:Nenhuma medalha encontrada.");
         } else {
             System.out.println("6:" + medalha.getCodigo() + "," + medalha.getTipo() + "," + medalha.isIndividual() + "," + medalha.getModalidade());
         }
@@ -276,21 +276,23 @@ public class ACMESports {
          */
     private void MostrarDadosAtletaTipoMedalha() {
         ArrayList<Atleta> encontraAtleta;
-        int tipo = 0;
+        int tipoMedalha;
 
         //System.out.println("Digite o tipo da medalha: ");
-        tipo = entrada.nextInt();
+        tipoMedalha = entrada.nextInt();
         entrada.nextLine();
 
-        encontraAtleta = plantel.atletaPorMedalha(tipo);
+        encontraAtleta = plantel.atletaPorMedalha(tipoMedalha);
 
         if (encontraAtleta.isEmpty()) {
-            System.out.println("8: Nenhum atleta encontrado.");
+            System.out.println("8:Nenhum atleta encontrado.");
         } else {
             for (Atleta atleta : encontraAtleta)
                 System.out.println("8:" + atleta.getNumero() + "," + atleta.getNome() + "," + atleta.getPais());
         }
     }
+
+
 
     //Mostrar os dados atletas de uma determinada modalidade
         /*
@@ -311,13 +313,13 @@ public class ACMESports {
 
 
         if (medalheiro.consultaMedalhas(modalidade) == null) {
-            System.out.println("9: Modalidade nao encontrada.");
+            System.out.println("9:Modalidade nao encontrada.");
         } else {
             for (Medalha medalha : medalhaPorModalidade) {
                 if (medalha.getAtletas().isEmpty()) {
                     System.out.println("9:" + medalha.getModalidade() + "," + medalha.getTipo() + "," + "sem atletas com medalha");
                 } else {
-                    for (Atleta atleta : medalha.getAtletas()) {
+                    for (Atleta atleta : medalha.getAtletas()) { //percorrer
                         System.out.println("9:" + medalha.getModalidade() + "," + medalha.getTipo() + "," + atleta.getNumero() + "," + atleta.getNome() + "," + atleta.getPais());
                     }
                 }
@@ -334,6 +336,8 @@ public class ACMESports {
         de erro: “10:Nenhum atleta com medalha.”. Caso contrário, mostra os dados
         do atleta e medalhas no formato: 10:número,nome,país,Ouro:quantidade,Prata:quantidade,Bronze: quantidade
          */
+
+    //verificar
     private void MostrarDadosAtletaMaisMedalha() {
         Atleta maiorMedalhista = plantel.maiorMedalhista();
         int ouro = 0;
@@ -360,7 +364,7 @@ public class ACMESports {
 
                 }
             }
-            System.out.println("10: " + maiorMedalhista.getNumero() + "," + maiorMedalhista.getNome() + "," + maiorMedalhista.getPais() + ",Ouro:" + ouro + ",Prata:" + prata + ",Bronze:" + bronze);
+            System.out.println("10:" + maiorMedalhista.getNumero() + "," + maiorMedalhista.getNome() + "," + maiorMedalhista.getPais() + ",Ouro:" + ouro + ",Prata:" + prata + ",Bronze:" + bronze);
 
         }
 
@@ -376,25 +380,27 @@ public class ACMESports {
 
     public void MostrarMedalhaPorPais(){
         ArrayList<Medalha> totalMedalha = medalheiro.consultaMedalhasPaises();
+
         if (totalMedalha.isEmpty()){
             System.out.println("Nenhuma medalha encontrada.");
         }
-        ArrayList<String> paises = new ArrayList<>();
+
+        ArrayList<String> mesmoPais = new ArrayList<>();
 
         for (Medalha medalha : totalMedalha){
             for (Atleta atleta : medalha.getAtletas()){
                 String pais = atleta.getPais();
-                    if(!paises.contains(pais)){
-                        paises.add(pais);
+                    if(!mesmoPais.contains(pais)){ // verificar se são diferentes
+                        mesmoPais.add(pais); // caso contrario adiciona no arraylist o pais igual
                     }
             }
         }
-        for (String pais : paises){
+        for (String pais : mesmoPais){ // for each para consultar os paises e detectar os mesmos
             int ouro = 0;
             int prata = 0;
             int bronze = 0;
 
-            for (Medalha medalha : medalheiro.consultaMedalhaPorPais(pais)){
+            for (Medalha medalha : medalheiro.consultaMedalhaPorPais(pais)){ // for each que ira agrupar os mesmos paises por medalha
                 switch (medalha.getTipo()){
                     case 1:
                         ouro++;
@@ -410,9 +416,11 @@ public class ACMESports {
 
                 }
             }
-            System.out.println("11:" + pais + "Ouro: " + ouro + ",Prata:" + prata + ",Bronze:" + bronze);
+            System.out.println("11:" + pais + "," + "Ouro:" + ouro + ",Prata:" + prata + ",Bronze:" + bronze);
         }
     }
+
+
 
 
 
